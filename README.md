@@ -25,7 +25,7 @@ PK=0x<testnet key> node witness/witness.mjs actions/checkout   # or specific rep
 Fund the witness address from https://hub.arkiv.network/faucet (Tiramisu, chain 7738577). Optional `GITHUB_TOKEN` raises GitHub API limits; `MAX_TAGS` (default 15) caps tags per repo.
 Run it on a cron (e.g. GitHub Actions schedule with the key as a secret) to keep witnessing; only *changes* and first sightings are written.
 
-Web UI: static files in `web/` (no build step; SDK loaded from esm.sh). `npx serve web` to run locally.
+Web UI: static files in `docs/` (no build step; SDK loaded from esm.sh). `npx serve docs` to run locally.
 
 ## Why Arkiv
 A Postgres/our-API log is only as trustworthy as its operator; IPFS gives immutability but no queryable index ("all observations of repo X tag Y by any witness"); a subgraph needs a custom contract.
