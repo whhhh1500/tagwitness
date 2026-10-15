@@ -1,0 +1,1 @@
+{"type":"module","private":true,"name":"tagwitness","license":"MIT","dependencies":{"@arkiv-network/sdk":"0.8.1","viem":"^2.57.7"}}

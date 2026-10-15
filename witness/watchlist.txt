@@ -1,0 +1,8 @@
+# owner/repo of popular GitHub Actions to witness
+actions/checkout
+actions/setup-node
+actions/cache
+actions/upload-artifact
+tj-actions/changed-files
+reviewdog/action-setup
+docker/build-push-action
