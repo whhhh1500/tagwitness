@@ -33,10 +33,16 @@ async function lastSeen(repo, tag) {
     .createdBy(account.address).limit(50).fetch();
   let best = null;
   for (const e of res.entities) {
-    const a = Object.fromEntries(e.attributes.map(x => [x.key, x.value]));
-    if (!best || Number(a.observedAt) > Number(best.observedAt)) best = a;
+    const a = attrsOf(e);
+    if (!best || Number(a.observed_at) > Number(best.observed_at)) best = a;
   }
   return best;
+}
+
+// SDK 0.8.1 returns attributes as { name: { type, value } }, not [{ key, value }]
+function attrsOf(e) {
+  const A = e.attributes || {};
+  return Array.isArray(A) ? Object.fromEntries(A.map(x => [x.key, x.value])) : Object.fromEntries(Object.entries(A).map(([k, v]) => [k, v && typeof v === "object" && "value" in v ? v.value : v]));
 }
 
 const now = Math.floor(Date.now() / 1000);
@@ -47,15 +53,15 @@ for (const repo of repos) {
     if (prev && prev.sha === sha) { console.log(`= ${repo}@${tag} ${sha.slice(0, 10)}`); continue; }
     const moved = prev && prev.sha !== sha;
     const { entityKey, txHash } = await wal.createEntity({
-      payload: jsonToPayload({ repo, tag, sha, previousSha: moved ? prev.sha : null, source: "api.github.com/repos/:repo/tags", observedAt: now }),
+      payload: jsonToPayload({ repo, tag, sha, previous_sha: moved ? prev.sha : null, source: "api.github.com/repos/:repo/tags", observed_at: now }),
       contentType: "application/json",
-      attributes: { app: APP, type: moved ? "move" : "observation", repo, tag, sha, observedAt: now, ...(moved ? { previousSha: prev.sha } : {}) },
+      attributes: { app: APP, type: moved ? "move" : "observation", repo, tag, sha, observed_at: now, ...(moved ? { previous_sha: prev.sha } : {}) },
       expires: ExpirationTime.fromDays(moved ? 365 : 180),
     });
     // a "move" also gets an observation so lastSeen() advances
     if (moved) await wal.createEntity({
-      payload: jsonToPayload({ repo, tag, sha, observedAt: now }), contentType: "application/json",
-      attributes: { app: APP, type: "observation", repo, tag, sha, observedAt: now }, expires: ExpirationTime.fromDays(180),
+      payload: jsonToPayload({ repo, tag, sha, observed_at: now }), contentType: "application/json",
+      attributes: { app: APP, type: "observation", repo, tag, sha, observed_at: now }, expires: ExpirationTime.fromDays(180),
     });
     console.log(`${moved ? "!! MOVED" : "+ new"} ${repo}@${tag} ${sha.slice(0, 10)} entity=${entityKey} tx=${txHash}`);
   }

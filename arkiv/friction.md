@@ -20,3 +20,20 @@
 
 ### 5. Positive notes
 - Public reads worked first try from Node and the browser via esm.sh; `createdBy()` made per-witness filtering trivial; async iteration over pages is nice.
+
+## Attribute names: camelCase rejected, with a misleading error (SDK 0.8.1, Tiramisu)
+- `createEntity` with attribute `observedAt` reverted in `execute()` on `0x4400…0044` with
+  `Ident32InvalidByte(8, 0x41)`. The SDK's decoded message says the name charset is
+  `"A"-"Z", "a"-"z", …` and that `"A"` is *outside* it — self-contradictory. In practice uppercase
+  letters are rejected in attribute names; only lowercase/digits/`.`/`-`/`_` work.
+- The revert happens at gas-estimation/simulation time, so it looks like a funding/gas/BTL problem
+  at first glance (we checked balance, chain id, expiry before reading the decoded error). The useful
+  line is at the *head* of stderr; the tail is a huge ABI-encoded calldata dump.
+- No client-side validation: the SDK could reject invalid names before an RPC round-trip.
+- Fix: renamed `observedAt`→`observed_at`, `previousSha`→`previous_sha`.
+
+## Query results: `attributes` is an object, not an array
+- In 0.8.1, `select({ attributes: true })` returns `attributes` as `{ name: { type, value } }`
+  (e.g. `observed_at: { type: "i32", value: 1792119627 }`), while examples/our earlier code assumed
+  `[{ key, value }]`. This only surfaced once the first entities existed (`e.attributes.map is not a function`).
+- Numeric attributes were inferred as `i32` — fine for unix seconds until 2038, but worth documenting.
