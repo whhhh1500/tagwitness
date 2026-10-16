@@ -6,20 +6,21 @@ h1{margin-bottom:0}small,.muted{color:#666}input,textarea{width:100%;font:13px m
 button{padding:.4rem .9rem;margin:.4rem .4rem .4rem 0;cursor:pointer}section{border:1px solid #ddd;border-radius:8px;padding:1rem;margin:1rem 0}
 table{border-collapse:collapse;width:100%;font-size:13px}td,th{border-bottom:1px solid #eee;padding:.25rem;text-align:left;font-family:monospace}
 .ok{color:#087f23;font-weight:600}.bad{color:#b00020;font-weight:600}.warn{color:#a66b00;font-weight:600}
-</style></head><body>
+</style><link rel="icon" href="data:,">
+</head><body>
 <h1>TagWitness</h1>
 <p class="muted">Independent witnesses record which commit each GitHub Actions tag points to, on <a href="https://arkiv.network">Arkiv</a> (Tiramisu testnet).
 If a tag is silently re-pointed — as in the <a href="https://github.com/tj-actions/changed-files/issues/2463">tj-actions/changed-files compromise</a> (CVE-2025-30066) — the history can't be rewritten by the repo owner, GitHub, or us.</p>
 
 <section><h3>1 · Check a workflow</h3>
 <textarea id="yaml" rows="7">steps:
-  - uses: actions/checkout@v4
-  - uses: tj-actions/changed-files@v45
-  - uses: actions/setup-node@v4</textarea>
+  - uses: actions/checkout@v7
+  - uses: tj-actions/changed-files@v47
+  - uses: actions/setup-node@v6</textarea>
 <button id="checkYaml">Check every <code>uses:</code></button><div id="yamlOut"></div></section>
 
 <section><h3>2 · Look up one tag</h3>
-<input id="ref" value="actions/checkout@v4"><button id="lookup">Show witnessed history</button><div id="refOut"></div></section>
+<input id="ref" value="actions/checkout@v7"><button id="lookup">Show witnessed history</button><div id="refOut"></div></section>
 
 <section><h3>3 · Recent tag-move alerts</h3><button id="moves">Load</button><div id="movesOut"></div></section>
 
